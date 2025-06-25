@@ -1,12 +1,12 @@
 # IDE和编辑器相关
-.vscode/
+# .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
 # Serena AI助手相关
-.serena/
+# .serena/
 
 # 操作系统相关
 .DS_Store
@@ -44,6 +44,6 @@ uploads/*
 !uploads/.gitkeep
 
 # 环境配置
-.env
-.env.local
-.env.*.local 
+# .env
+# .env.local
+# .env.*.local 
