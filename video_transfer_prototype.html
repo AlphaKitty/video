@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频转换工具 - 中越双语教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #f59e0b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary-color);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-100);
+        }
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main {
+            min-height: calc(100vh - 80px);
+            padding: 2rem 0;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Upload Page */
+        .upload-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: 1rem;
+            padding: 3rem;
+            margin: 2rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: var(--gray-50);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Processing Page */
+        .processing-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .progress-container {
+            margin: 2rem 0;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background: var(--gray-50);
+        }
+
+        .progress-step.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .progress-step.completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .step-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step-icon.pending {
+            background: var(--gray-300);
+            color: var(--gray-600);
+        }
+
+        .step-icon.active {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .step-icon.completed {
+            background: white;
+            color: var(--success-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: var(--gray-200);
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s;
+        }
+
+        /* Editor Page */
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-preview {
+            background: black;
+            border-radius: 0.5rem;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .subtitle-editor {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .subtitle-item {
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle-time {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle-text {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .subtitle-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .subtitle-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Settings Page */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .settings-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .color-input {
+            width: 3rem;
+            height: 3rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        /* History Page */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+
+        .history-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .history-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+        }
+
+        .history-content {
+            padding: 1rem;
+        }
+
+        .history-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .history-meta {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+            }
+
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+
+            .subtitle-text {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">V</div>
+                    <span>视频转换工具</span>
+                </div>
+                <nav class="nav">
+                    <div class="nav-item active" data-page="upload">上传视频</div>
+                    <div class="nav-item" data-page="processing">处理中</div>
+                    <div class="nav-item" data-page="editor">编辑字幕</div>
+                    <div class="nav-item" data-page="settings">设置</div>
+                    <div class="nav-item" data-page="history">历史记录</div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Upload Page -->
+            <div class="page active" id="upload-page">
+                <div class="upload-section fade-in">
+                    <h1 style="font-size: 2rem; margin-bottom: 1rem; color: var(--gray-800);">
+                        上传视频开始转换
+                    </h1>
+                    <p style="color: var(--gray-600); margin-bottom: 2rem;">
+                        支持MP4、AVI、MOV等格式，自动识别中文语音并翻译成越南语
+                    </p>
+                    
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📹</div>
+                        <div class="upload-text">拖拽视频文件到这里或点击上传</div>
+                        <div class="upload-hint">支持格式：MP4, AVI, MOV, MKV (最大500MB)</div>
+                        <input type="file" id="file-input" accept="video/*" style="display: none;">
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="startProcessing()">
+                            <span>开始处理</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Page -->
+            <div class="page" id="processing-page">
+                <div class="processing-section fade-in">
+                    <h2 style="margin-bottom: 2rem; color: var(--gray-800);">视频处理中...</h2>
+                    
+                    <div class="progress-container">
+                        <div class="progress-step active" id="step-1">
+                            <div class="step-icon active">1</div>
+                            <div>
+                                <div style="font-weight: 600;">上传视频</div>
+                                <div style="font-size: 0.9rem;">正在上传视频文件...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-step" id="step-2">
+                            <div class="step-icon pending">2</div>
+                            <div>
+                                <div style="font-weight: 600;">语音识别</div>
+                                <div style="font-size: 0.9rem;">识别视频中的中文语音</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-step" id="step-3">
+                            <div class="step-icon pending">3</div>
+                            <div>
+                                <div style="font-weight: 600;">翻译处理</div>
+                                <div style="font-size: 0.9rem;">中文翻译成越南语</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-step" id="step-4">
+                            <div class="step-icon pending">4</div>
+                            <div>
+                                <div style="font-weight: 600;">词组拆分</div>
+                                <div style="font-size: 0.9rem;">将句子拆分为教学词组</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-step" id="step-5">
+                            <div class="step-icon pending">5</div>
+                            <div>
+                                <div style="font-weight: 600;">生成字幕</div>
+                                <div style="font-size: 0.9rem;">生成双语字幕文件</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 20%;"></div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <div class="spinner" style="margin: 0 auto 1rem;"></div>
+                        <div style="color: var(--gray-600);">处理中，请稍候...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Page -->
+            <div class="page" id="editor-page">
+                <div class="fade-in">
+                    <h2 style="margin-bottom: 2rem; color: var(--gray-800);">编辑字幕</h2>
+                    
+                    <div class="editor-container">
+                        <div class="video-preview">
+                            <div style="text-align: center;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">🎬</div>
+                                <div>视频预览区域</div>
+                            </div>
+                        </div>
+                        
+                        <div class="subtitle-editor">
+                            <h3 style="margin-bottom: 1rem; color: var(--gray-700);">字幕编辑</h3>
+                            
+                            <div class="subtitle-item">
+                                <div class="subtitle-time">00:00 - 00:03</div>
+                                <div class="subtitle-text">
+                                    <input type="text" class="subtitle-input" value="你好，欢迎学习越南语" placeholder="中文">
+                                    <input type="text" class="subtitle-input" value="Xin chào, chào mừng học tiếng Việt" placeholder="越南语">
+                                </div>
+                            </div>
+                            
+                            <div class="subtitle-item">
+                                <div class="subtitle-time">00:03 - 00:06</div>
+                                <div class="subtitle-text">
+                                    <input type="text" class="subtitle-input" value="今天我们来学习基础词汇" placeholder="中文">
+                                    <input type="text" class="subtitle-input" value="Hôm nay chúng ta học từ vựng cơ bản" placeholder="越南语">
+                                </div>
+                            </div>
+                            
+                            <div class="subtitle-item">
+                                <div class="subtitle-time">00:06 - 00:09</div>
+                                <div class="subtitle-text">
+                                    <input type="text" class="subtitle-input" value="请跟我一起读" placeholder="中文">
+                                    <input type="text" class="subtitle-input" value="Hãy đọc theo tôi" placeholder="越南语">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <button class="btn btn-primary" onclick="saveSubtitles()">保存字幕</button>
+                                <button class="btn btn-secondary" onclick="exportVideo()">导出视频</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" id="settings-page">
+                <div class="fade-in">
+                    <h2 style="margin-bottom: 2rem; color: var(--gray-800);">设置</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <div class="settings-title">字幕样式</div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">字体大小</label>
+                                <select class="form-select">
+                                    <option>小 (16px)</option>
+                                    <option selected>中 (20px)</option>
+                                    <option>大 (24px)</option>
+                                    <option>特大 (28px)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">字体颜色</label>
+                                <div class="color-picker">
+                                    <input type="color" class="color-input" value="#ffffff">
+                                    <span>白色</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">背景颜色</label>
+                                <div class="color-picker">
+                                    <input type="color" class="color-input" value="#000000">
+                                    <span>黑色</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <div class="settings-title">翻译设置</div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">源语言</label>
+                                <select class="form-select">
+                                    <option selected>中文 (简体)</option>
+                                    <option>中文 (繁体)</option>
+                                    <option>英语</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">目标语言</label>
+                                <select class="form-select">
+                                    <option selected>越南语</option>
+                                    <option>泰语</option>
+                                    <option>印尼语</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">翻译质量</label>
+                                <select class="form-select">
+                                    <option>快速 (基础翻译)</option>
+                                    <option selected>标准 (平衡)</option>
+                                    <option>高质量 (详细翻译)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <div class="settings-title">输出设置</div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">视频质量</label>
+                                <select class="form-select">
+                                    <option>低质量 (720p)</option>
+                                    <option selected>标准质量 (1080p)</option>
+                                    <option>高质量 (4K)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">输出格式</label>
+                                <select class="form-select">
+                                    <option selected>MP4</option>
+                                    <option>AVI</option>
+                                    <option>MOV</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">字幕位置</label>
+                                <select class="form-select">
+                                    <option>顶部</option>
+                                    <option selected>底部</option>
+                                    <option>中间</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+                        <button class="btn btn-secondary" onclick="resetSettings()">重置默认</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Page -->
+            <div class="page" id="history-page">
+                <div class="fade-in">
+                    <h2 style="margin-bottom: 2rem; color: var(--gray-800);">历史记录</h2>
+                    
+                    <div class="history-grid">
+                        <div class="history-card">
+                            <div class="history-thumbnail">📹</div>
+                            <div class="history-content">
+                                <div class="history-title">中文教学视频</div>
+                                <div class="history-meta">
+                                    处理时间：2024-01-15 14:30<br>
+                                    时长：5分23秒<br>
+                                    状态：已完成
+                                </div>
+                                <div class="history-actions">
+                                    <button class="btn btn-secondary" style="font-size: 0.8rem;">重新编辑</button>
+                                    <button class="btn btn-primary" style="font-size: 0.8rem;">下载</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="history-card">
+                            <div class="history-thumbnail">📹</div>
+                            <div class="history-content">
+                                <div class="history-title">日常对话练习</div>
+                                <div class="history-meta">
+                                    处理时间：2024-01-14 16:45<br>
+                                    时长：3分12秒<br>
+                                    状态：已完成
+                                </div>
+                                <div class="history-actions">
+                                    <button class="btn btn-secondary" style="font-size: 0.8rem;">重新编辑</button>
+                                    <button class="btn btn-primary" style="font-size: 0.8rem;">下载</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="history-card">
+                            <div class="history-thumbnail">📹</div>
+                            <div class="history-content">
+                                <div class="history-title">词汇学习视频</div>
+                                <div class="history-meta">
+                                    处理时间：2024-01-13 09:20<br>
+                                    时长：8分45秒<br>
+                                    状态：处理中
+                                </div>
+                                <div class="history-actions">
+                                    <button class="btn btn-secondary" style="font-size: 0.8rem;">查看进度</button>
+                                    <button class="btn btn-danger" style="font-size: 0.8rem;">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 页面切换功能
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const targetPage = item.getAttribute('data-page');
+                switchPage(targetPage);
+            });
+        });
+
+        function switchPage(pageName) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+            
+            // 更新页面显示
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`${pageName}-page`).classList.add('active');
+        }
+
+        // 文件上传功能
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            if (file.type.startsWith('video/')) {
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <div class="upload-text">已选择文件：${file.name}</div>
+                    <div class="upload-hint">文件大小：${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                `;
+            } else {
+                alert('请选择视频文件！');
+            }
+        }
+
+        // 处理进度模拟
+        function startProcessing() {
+            switchPage('processing');
+            simulateProcessing();
+        }
+
+        function simulateProcessing() {
+            const steps = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'];
+            const progressFill = document.getElementById('progress-fill');
+            let currentStep = 0;
+            let progress = 20;
+
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    // 完成当前步骤
+                    const stepElement = document.getElementById(steps[currentStep]);
+                    stepElement.classList.remove('active');
+                    stepElement.classList.add('completed');
+                    
+                    // 激活下一步
+                    if (currentStep + 1 < steps.length) {
+                        document.getElementById(steps[currentStep + 1]).classList.add('active');
+                    }
+                    
+                    currentStep++;
+                    progress += 20;
+                    progressFill.style.width = progress + '%';
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        switchPage('editor');
+                    }, 1000);
+                }
+            }, 2000);
+        }
+
+        // 字幕编辑功能
+        function saveSubtitles() {
+            alert('字幕已保存！');
+        }
+
+        function exportVideo() {
+            alert('视频导出功能开发中...');
+        }
+
+        // 设置功能
+        function saveSettings() {
+            alert('设置已保存！');
+        }
+
+        function resetSettings() {
+            if (confirm('确定要重置所有设置吗？')) {
+                alert('设置已重置为默认值！');
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('视频转换工具原型已加载');
+        });
+    </script>
+</body>
+</html> 
