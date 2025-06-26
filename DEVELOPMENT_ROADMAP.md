@@ -5,7 +5,7 @@
 - ✅ 所有编译错误已修复
 - ✅ API路径统一为 `/api/video/*`
 - ✅ 前端服务: http://localhost:5173
-- ✅ 后端服务: http://localhost:8080
+- ✅ 后端服务: http://localhost:8088
 
 ## 🚀 开发阶段规划
 

@@ -46,6 +46,73 @@
             </div>
           </div>
         </div>
+
+        <!-- 调试和测试区域 -->
+        <div class="debug-section" v-if="showDebug">
+          <div class="debug-header">
+            <h3>调试工具</h3>
+            <a-button size="small" @click="showDebug = false">隐藏</a-button>
+          </div>
+          
+          <div class="debug-actions">
+            <a-button 
+              size="small" 
+              @click="handleTestExtractAudio"
+              :loading="debugLoading.extract"
+            >
+              测试音频提取
+            </a-button>
+            <a-button 
+              size="small" 
+              @click="handleTestTranscribe"
+              :loading="debugLoading.transcribe"
+            >
+              测试语音识别
+            </a-button>
+            <a-button 
+              size="small" 
+              @click="handleCheckStatus"
+              :loading="debugLoading.status"
+            >
+              检查服务状态
+            </a-button>
+            <a-button 
+              size="small" 
+              @click="handleRefreshTask"
+              :loading="debugLoading.refresh"
+            >
+              刷新任务状态
+            </a-button>
+          </div>
+
+          <!-- 日志显示 -->
+          <div class="logs-section">
+            <div class="logs-header">
+              <span>处理日志</span>
+              <a-button size="mini" @click="videoStore.clearLogs()">清空</a-button>
+            </div>
+            <div class="logs-container">
+              <div 
+                v-for="(log, index) in videoStore.processingLogs" 
+                :key="index"
+                class="log-item"
+                :class="getLogClass(log)"
+              >
+                {{ log }}
+              </div>
+              <div v-if="videoStore.processingLogs.length === 0" class="no-logs">
+                暂无日志信息
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 显示调试按钮 -->
+        <div class="debug-toggle" v-if="!showDebug">
+          <a-button type="text" size="small" @click="showDebug = true">
+            显示调试工具
+          </a-button>
+        </div>
       </div>
       
       <!-- 处理完成或失败 -->
@@ -118,6 +185,13 @@ const videoStore = useVideoStore()
 
 // 响应式数据
 const task = computed(() => videoStore.currentTask)
+const showDebug = ref(false)
+const debugLoading = ref({
+  extract: false,
+  transcribe: false,
+  status: false,
+  refresh: false
+})
 
 // 处理步骤配置
 const processSteps = ref([
@@ -153,7 +227,56 @@ const processSteps = ref([
   }
 ])
 
-// 方法
+// 调试方法
+const handleTestExtractAudio = async () => {
+  debugLoading.value.extract = true
+  try {
+    const result = await videoStore.testExtractAudio(task.value.id)
+    Message.success('音频提取测试完成')
+  } catch (error) {
+    Message.error(error.message || '音频提取测试失败')
+  } finally {
+    debugLoading.value.extract = false
+  }
+}
+
+const handleTestTranscribe = async () => {
+  debugLoading.value.transcribe = true
+  try {
+    const result = await videoStore.testTranscribe(task.value.id)
+    Message.success('语音识别测试完成')
+  } catch (error) {
+    Message.error(error.message || '语音识别测试失败')
+  } finally {
+    debugLoading.value.transcribe = false
+  }
+}
+
+const handleCheckStatus = async () => {
+  debugLoading.value.status = true
+  try {
+    const status = await videoStore.checkServiceStatus()
+    Message.success('服务状态检查完成')
+  } catch (error) {
+    Message.error(error.message || '服务状态检查失败')
+  } finally {
+    debugLoading.value.status = false
+  }
+}
+
+const handleRefreshTask = async () => {
+  debugLoading.value.refresh = true
+  try {
+    await videoStore.getTask(task.value.id)
+    Message.success('任务状态已刷新')
+  } catch (error) {
+    Message.error(error.message || '刷新任务状态失败')
+  } finally {
+    debugLoading.value.refresh = false
+  }
+}
+
+// 原有方法
 const getProgressStatus = (status) => {
   if (status === 'COMPLETED') return 'success'
   if (status === 'FAILED') return 'danger'
@@ -193,6 +316,17 @@ const getStepClass = (step, task) => {
   }
 }
 
+const getLogClass = (log) => {
+  if (log.includes('成功') || log.includes('完成')) {
+    return 'log-success'
+  } else if (log.includes('失败') || log.includes('错误')) {
+    return 'log-error'
+  } else if (log.includes('开始') || log.includes('测试')) {
+    return 'log-info'
+  }
+  return 'log-default'
+}
+
 const goToEditor = () => {
   router.push(`/editor/${task.value.id}`)
 }
@@ -227,6 +361,10 @@ const startProcessing = async () => {
 onMounted(async () => {
   const taskId = parseInt(route.params.id)
   
+  // 清空之前的日志
+  videoStore.clearLogs()
+  videoStore.addLog(`开始处理任务 ID: ${taskId}`)
+  
   try {
     // 获取任务信息
     await videoStore.getTask(taskId)
@@ -242,6 +380,7 @@ onMounted(async () => {
     }
   } catch (error) {
     Message.error('获取任务信息失败')
+    videoStore.addLog(`获取任务信息失败: ${error.message}`)
     router.push('/upload')
   }
 })
@@ -254,7 +393,7 @@ onUnmounted(() => {
 
 <style scoped>
 .processing-page {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -302,6 +441,7 @@ onUnmounted(() => {
 
 .process-steps {
   text-align: left;
+  margin-bottom: 2rem;
 }
 
 .process-step {
@@ -375,6 +515,97 @@ onUnmounted(() => {
   color: #3b82f6;
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+/* 调试区域样式 */
+.debug-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.debug-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.debug-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.debug-toggle {
+  margin-top: 1rem;
+}
+
+/* 日志区域样式 */
+.logs-section {
+  background: #1a1a1a;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: white;
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.logs-container {
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.log-item {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #374151;
+}
+
+.log-item:last-child {
+  border-bottom: none;
+}
+
+.log-success {
+  color: #10b981;
+}
+
+.log-error {
+  color: #ef4444;
+}
+
+.log-info {
+  color: #3b82f6;
+}
+
+.log-default {
+  color: #e5e7eb;
+}
+
+.no-logs {
+  color: #6b7280;
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
 }
 
 .result-section {

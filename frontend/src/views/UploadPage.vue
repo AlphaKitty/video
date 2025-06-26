@@ -152,12 +152,15 @@ const handleUpload = async () => {
   }
   
   try {
+    videoStore.addLog(`开始上传文件: ${selectedFile.value.name}`)
     const task = await videoStore.uploadVideo(selectedFile.value)
     Message.success('上传成功！')
+    videoStore.addLog(`文件上传成功，任务ID: ${task.id}`)
     
     // 跳转到处理页面
     router.push(`/processing/${task.id}`)
   } catch (error) {
+    videoStore.addLog(`文件上传失败: ${error.message}`)
     Message.error(error.message || '上传失败')
   }
 }

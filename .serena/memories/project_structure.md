@@ -1,6 +1,7 @@
 # 项目结构（最新版本）
 
 ## 根目录结构
+
 ```
 video/
 ├── frontend/                    # Vue 3 前端工程
@@ -34,7 +35,8 @@ video/
 ```
 
 ## 关键文件说明
+
 - **frontend/src/App.vue**: 主应用布局和路由
 - **frontend/src/stores/video.js**: 视频处理状态管理
-- **backend/src/main/java/com/video/controller/VideoController.java**: 主要API接口
-- **backend/src/main/resources/application.yml**: 后端配置（端口8080）
+- **backend/src/main/java/com/video/controller/VideoController.java**: 主要 API 接口
+- **backend/src/main/resources/application.yml**: 后端配置（端口 8088）

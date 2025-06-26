@@ -1,24 +1,27 @@
 server:
-  port: 8080
+  port: 8088
 
 spring:
   application:
     name: video-backend
-  
+
   # 文件上传配置
   servlet:
     multipart:
       enabled: true
       max-file-size: 500MB
       max-request-size: 500MB
-  
+
   # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/project_management?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    # url: jdbc:mysql://localhost:3306/project_management?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    # username: root
+    # password: 123456
+    url: jdbc:mysql://localhost:3306/video_converter?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: nullnull
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
   # MyBatis Plus 配置
   mybatis-plus:
     configuration:
@@ -39,12 +42,24 @@ logging:
 # AI 服务配置
 ai:
   openai:
-    api-key: ${OPENAI_API_KEY:your-openai-api-key}
+    api-key: ${OPENAI_API_KEY:}
     base-url: https://api.openai.com/v1
   whisper:
-    api-url: ${WHISPER_API_URL:http://localhost:9000}
-    
+    model: whisper-1
+    language: zh
+    response-format: text
+  translation:
+    model: gpt-4
+    source-language: zh
+    target-language: vi
+    temperature: 0.3
+    # 可选配置: 使用 gpt-3.5-turbo 以降低成本
+    # model: gpt-3.5-turbo
+
+# FFmpeg 配置（现在通过 FFmpegConfig 类自动管理）
+# 支持系统 PATH 和内置二进制文件自动检测
+
 # 文件存储配置
 file:
   upload-path: ${user.home}/video-converter/uploads/
-  temp-path: ${user.home}/video-converter/temp/ 
+  temp-path: ${user.home}/video-converter/temp/

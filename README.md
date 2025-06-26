@@ -23,6 +23,7 @@ video/
 ## 功能特性
 
 ### 已实现功能
+
 - ✅ 前端 Vue 3 + ArcoDesign + Pinia 基础架构
 - ✅ 后端 Spring Boot 基础架构
 - ✅ 视频上传页面
@@ -31,6 +32,7 @@ video/
 - ✅ 基础 API 接口定义
 
 ### 开发中功能
+
 - 🔄 后端 Lombok 编译问题修复
 - 🔄 Whisper 语音识别集成
 - 🔄 GPT 翻译服务集成
@@ -38,6 +40,7 @@ video/
 - 🔄 视频预览功能
 
 ### 计划功能
+
 - 📋 文件下载功能
 - 📋 设置页面完善
 - 📋 用户认证
@@ -46,25 +49,30 @@ video/
 ## 开发环境启动
 
 ### 前端启动
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
 前端将在 http://localhost:5173 运行
 
 ### 后端启动
+
 ```bash
 cd backend
 # 注意：当前后端存在 Lombok 编译问题，需要修复
 mvn clean compile
 mvn spring-boot:run
 ```
-后端将在 http://localhost:8080 运行
+
+后端将在 http://localhost:8088 运行
 
 ## API 接口
 
 ### 视频处理接口
+
 - `POST /api/video/upload` - 上传视频文件
 - `POST /api/video/process/{id}` - 开始处理视频
 - `GET /api/video/task/{id}` - 获取任务状态
@@ -74,6 +82,7 @@ mvn spring-boot:run
 ## 技术栈
 
 ### 前端
+
 - Vue 3 + Composition API
 - ArcoDesign Vue 组件库
 - Pinia 状态管理
@@ -81,6 +90,7 @@ mvn spring-boot:run
 - Vite 构建工具
 
 ### 后端
+
 - Spring Boot 3.2.1
 - Spring Web
 - Spring WebFlux (用于 AI API 调用)
@@ -88,6 +98,7 @@ mvn spring-boot:run
 - Maven
 
 ### AI 服务
+
 - Whisper API (语音识别)
 - OpenAI GPT API (翻译和分词)
 
@@ -96,6 +107,7 @@ mvn spring-boot:run
 项目基础架构已搭建完成，前端可以正常运行并显示各个页面。后端存在 Lombok 注解编译问题需要修复。
 
 下一步开发重点：
+
 1. 修复后端编译问题
 2. 完善 AI 服务集成
 3. 实现字幕编辑功能
@@ -107,4 +119,4 @@ mvn spring-boot:run
 - 后端采用分层架构设计
 - API 遵循 RESTful 规范
 - 支持文件上传和实时进度追踪
-- 响应式设计，支持移动端访问 
+- 响应式设计，支持移动端访问
